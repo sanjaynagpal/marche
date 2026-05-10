@@ -16,7 +16,10 @@
     <modules>
         <module>marche-services-parent</module>
         <module>marche-libraries-parent</module>
+        <module>marche-tools-parent</module>
         <module>http-lib-java</module>
+        <module>health-probe-go</module>
+        <module>health-probe-java</module>
         <module>alpha-eight</module>
         <module>orion-eleven</module>
         <module>polaris-eleven</module>

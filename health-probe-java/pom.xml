@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.sn.marche</groupId>
+        <artifactId>marche-tools-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath>../marche-tools-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>health-probe-java</artifactId>
+    <packaging>jar</packaging>
+    <name>health-probe-java</name>
+    <description>
+        CLI tool that queries /health endpoints on running Marche services and reports
+        status. Written in Java 17; uses java.net.http.HttpClient (no external
+        dependencies) and showcases records, text blocks, and var. Produces a
+        self-contained JAR runnable with: java -jar health-probe-java.jar &lt;url&gt;
+    </description>
+
+    <properties>
+        <java.target.release>17</java.target.release>
+        <main.class>io.sn.marche.tools.healthprobe.Main</main.class>
+    </properties>
+
+    <!-- No external dependencies: java.net.http is part of the JDK since Java 11. -->
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>${java.target.release}</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>${main.class}</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
