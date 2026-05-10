@@ -1,0 +1,38 @@
+io.sn.marche:kepler-twenty-one:jar:0.1.0-SNAPSHOT
++- org.jetbrains.kotlin:kotlin-stdlib:jar:2.3.21:compile
+|  \- org.jetbrains:annotations:jar:13.0:compile
++- io.ktor:ktor-server-core-jvm:jar:3.0.3:compile
+|  +- org.slf4j:slf4j-api:jar:2.0.16:compile
+|  +- com.typesafe:config:jar:1.4.3:compile
+|  +- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:jar:1.9.0:compile
+|  +- io.ktor:ktor-utils-jvm:jar:3.0.3:compile
+|  |  +- io.ktor:ktor-io-jvm:jar:3.0.3:compile
+|  |  |  \- org.jetbrains.kotlinx:kotlinx-io-core-jvm:jar:0.5.4:compile
+|  |  |     \- org.jetbrains.kotlinx:kotlinx-io-bytestring-jvm:jar:0.5.4:compile
+|  |  \- org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:jar:1.7.3:compile
+|  +- io.ktor:ktor-http-jvm:jar:3.0.3:compile
+|  +- io.ktor:ktor-serialization-jvm:jar:3.0.3:compile
+|  +- io.ktor:ktor-events-jvm:jar:3.0.3:compile
+|  +- io.ktor:ktor-http-cio-jvm:jar:3.0.3:compile
+|  |  \- io.ktor:ktor-network-jvm:jar:3.0.3:compile
+|  +- io.ktor:ktor-websockets-jvm:jar:3.0.3:compile
+|  +- org.jetbrains.kotlin:kotlin-reflect:jar:2.0.21:compile
+|  \- org.fusesource.jansi:jansi:jar:2.4.1:runtime
++- io.ktor:ktor-server-netty-jvm:jar:3.0.3:compile
+|  +- io.netty:netty-codec-http2:jar:4.1.116.Final:compile
+|  |  +- io.netty:netty-common:jar:4.1.116.Final:compile
+|  |  +- io.netty:netty-buffer:jar:4.1.116.Final:compile
+|  |  +- io.netty:netty-transport:jar:4.1.116.Final:compile
+|  |  |  \- io.netty:netty-resolver:jar:4.1.116.Final:compile
+|  |  +- io.netty:netty-codec:jar:4.1.116.Final:compile
+|  |  +- io.netty:netty-handler:jar:4.1.116.Final:compile
+|  |  \- io.netty:netty-codec-http:jar:4.1.116.Final:compile
+|  +- org.eclipse.jetty.alpn:alpn-api:jar:1.1.3.v20160715:compile
+|  +- io.netty:netty-transport-native-kqueue:jar:4.1.116.Final:compile
+|  |  +- io.netty:netty-transport-native-unix-common:jar:4.1.116.Final:compile
+|  |  \- io.netty:netty-transport-classes-kqueue:jar:4.1.116.Final:compile
+|  \- io.netty:netty-transport-native-epoll:jar:4.1.116.Final:compile
+|     \- io.netty:netty-transport-classes-epoll:jar:4.1.116.Final:compile
++- ch.qos.logback:logback-classic:jar:1.5.12:compile
+|  \- ch.qos.logback:logback-core:jar:1.5.12:compile
+\- org.yaml:snakeyaml:jar:2.3:compile

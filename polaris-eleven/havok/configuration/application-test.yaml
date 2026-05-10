@@ -1,0 +1,7 @@
+marche:
+  env: TEST
+  module: polaris-havok
+server:
+  port: 18090
+logging:
+  level: INFO

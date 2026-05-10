@@ -1,0 +1,7 @@
+marche:
+  env: PROD
+  module: orion-eleven
+server:
+  port: 8081
+logging:
+  level: WARN

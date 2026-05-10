@@ -1,0 +1,7 @@
+marche:
+  env: PROD
+  module: polaris-havok
+server:
+  port: 8090
+logging:
+  level: WARN

@@ -1,0 +1,7 @@
+marche:
+  env: DEV
+  module: polaris-wanda
+server:
+  port: 8091
+logging:
+  level: DEBUG

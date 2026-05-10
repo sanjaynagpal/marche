@@ -1,0 +1,7 @@
+marche:
+  env: TEST
+  module: orion-eleven
+server:
+  port: 18081
+logging:
+  level: INFO

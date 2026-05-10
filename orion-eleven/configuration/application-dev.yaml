@@ -1,0 +1,7 @@
+marche:
+  env: DEV
+  module: orion-eleven
+server:
+  port: 8081
+logging:
+  level: DEBUG

@@ -1,0 +1,7 @@
+marche:
+  env: TEST
+  module: sirius-seventeen
+server:
+  port: 18082
+logging:
+  level: INFO

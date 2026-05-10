@@ -1,0 +1,7 @@
+marche:
+  env: PROD
+  module: kepler-eleven
+server:
+  port: 8084
+logging:
+  level: WARN
