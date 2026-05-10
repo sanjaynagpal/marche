@@ -1,0 +1,10 @@
+=== Assembly Verification Report ===
+Generated : 2026-05-10T17:50:30
+Module    : alpha-eight:0.1.0-SNAPSHOT
+Archive   : alpha-eight-0.1.0-SNAPSHOT-bin.tar.gz
+
+Expected : 3 artifact(s)
+Present  : 3 artifact(s)
+Missing  : 0 artifact(s)
+
+RESULT: PASS — all runtime artifacts verified in distribution.

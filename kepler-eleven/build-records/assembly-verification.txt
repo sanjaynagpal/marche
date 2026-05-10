@@ -1,0 +1,10 @@
+=== Assembly Verification Report ===
+Generated : 2026-05-10T16:58:30
+Module    : kepler-eleven:0.1.0-SNAPSHOT
+Archive   : kepler-eleven-0.1.0-SNAPSHOT-bin.tar.gz
+
+Expected : 40 artifact(s)
+Present  : 40 artifact(s)
+Missing  : 0 artifact(s)
+
+RESULT: PASS — all runtime artifacts verified in distribution.
