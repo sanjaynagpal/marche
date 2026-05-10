@@ -123,6 +123,32 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>verify-assembly</id>
+                        <phase>verify</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>--source</argument>
+                                <argument>11</argument>
+                                <argument>${maven.multiModuleProjectDirectory}/src/build-support/AssemblyVerifier.java</argument>
+                                <argument>${project.basedir}</argument>
+                                <argument>${project.build.directory}</argument>
+                                <argument>${project.artifactId}</argument>
+                                <argument>${project.version}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
 </project>

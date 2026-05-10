@@ -27,9 +27,22 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.build.directory}/lib</directory>
+            <directory>${project.build.directory}</directory>
             <outputDirectory>bin/lib</outputDirectory>
+            <includes>
+                <include>${project.artifactId}-${project.version}.jar</include>
+            </includes>
         </fileSet>
     </fileSets>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>bin/lib</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <scope>runtime</scope>
+            <useTransitiveDependencies>true</useTransitiveDependencies>
+            <useTransitiveFiltering>true</useTransitiveFiltering>
+        </dependencySet>
+    </dependencySets>
 
 </assembly>
