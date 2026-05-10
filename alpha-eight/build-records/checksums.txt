@@ -1,2 +1,2 @@
-b8baa77c4ff2d26d3511a6131cea8ff7fe81f22fd804d5f9992650ff267acdc3 *alpha-eight-0.1.0-SNAPSHOT.jar
+2295fa4afb04787c4c036903daf2a3cabadc22046f274cd906f14493bf0c9545 *alpha-eight-0.1.0-SNAPSHOT.jar
 63a76fe66b652360bd4c2c107e6f0258daa7d4bb492008ba8c26fcd230ff9146 *snakeyaml-2.3.jar

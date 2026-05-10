@@ -1,2 +1,2 @@
-56bb722c8227ea602df58670888cf0feb2e7dbb0cd6dbede304ea65b322d010e *polaris-wanda-0.1.0-SNAPSHOT.jar
+bf82fe27b6b9fde41ce9c72780cc4a585dd126033d18131710ce65e17206af35 *polaris-wanda-0.1.0-SNAPSHOT.jar
 63a76fe66b652360bd4c2c107e6f0258daa7d4bb492008ba8c26fcd230ff9146 *snakeyaml-2.3.jar

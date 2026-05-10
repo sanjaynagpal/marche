@@ -107,12 +107,17 @@ The `--release` flag passed to `javac` bakes the target version into every compi
 
 ### Build
 
+A Maven wrapper is included — no Maven installation required. It downloads Maven 3.9.15 on first use.
+
 ```bash
-# Build everything
-mvn clean package
+# Build everything (Unix)
+./mvnw clean package
+
+# Build everything (Windows)
+mvnw.cmd clean package
 
 # Build one module
-mvn clean package -pl alpha-eight
+./mvnw clean package -pl alpha-eight
 ```
 
 See [Build.md](Build.md) for the full plugin chain and output artifact details.

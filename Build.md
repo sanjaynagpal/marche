@@ -10,18 +10,23 @@
 
 ## Commands
 
+A Maven wrapper is included (`mvnw` / `mvnw.cmd`) so the build does not require Maven to be pre-installed. The wrapper downloads Maven 3.9.15 on first use and caches it in `~/.m2/wrapper/`. Use `mvnw` in place of `mvn` on Unix and `mvnw.cmd` on Windows; the commands are otherwise identical.
+
 ```bash
-# Build all modules
-mvn clean package
+# Build all modules (Unix)
+./mvnw clean package
+
+# Build all modules (Windows)
+mvnw.cmd clean package
 
 # Build a single module
-mvn clean package -pl alpha-eight
+./mvnw clean package -pl alpha-eight
 
 # Build a module and its full parent chain
-mvn clean package -pl alpha-eight -am
+./mvnw clean package -pl alpha-eight -am
 
 # Compile without packaging (no tarballs produced)
-mvn clean compile
+./mvnw clean compile
 ```
 
 ---
