@@ -1,0 +1,7 @@
+marche:
+  env: TEST
+  module: kepler-eleven
+server:
+  port: 18084
+logging:
+  level: INFO

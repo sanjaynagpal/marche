@@ -1,0 +1,7 @@
+marche:
+  env: DEV
+  module: kepler-twenty-one
+server:
+  port: 8085
+logging:
+  level: DEBUG

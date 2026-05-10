@@ -1,0 +1,7 @@
+marche:
+  env: PROD
+  module: vega-twenty-one
+server:
+  port: 8083
+logging:
+  level: WARN

@@ -1,0 +1,7 @@
+marche:
+  env: PROD
+  module: alpha-eight
+server:
+  port: 8080
+logging:
+  level: WARN

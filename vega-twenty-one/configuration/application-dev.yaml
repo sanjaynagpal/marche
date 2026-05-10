@@ -1,0 +1,7 @@
+marche:
+  env: DEV
+  module: vega-twenty-one
+server:
+  port: 8083
+logging:
+  level: DEBUG

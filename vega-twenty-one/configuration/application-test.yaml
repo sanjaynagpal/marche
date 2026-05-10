@@ -1,0 +1,7 @@
+marche:
+  env: TEST
+  module: vega-twenty-one
+server:
+  port: 18083
+logging:
+  level: INFO

@@ -1,0 +1,7 @@
+marche:
+  env: TEST
+  module: alpha-eight
+server:
+  port: 18080
+logging:
+  level: INFO

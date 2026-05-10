@@ -1,0 +1,2 @@
+io.sn.marche:alpha-eight:jar:0.1.0-SNAPSHOT
+\- org.yaml:snakeyaml:jar:2.3:compile

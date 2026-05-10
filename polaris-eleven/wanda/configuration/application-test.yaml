@@ -1,0 +1,7 @@
+marche:
+  env: TEST
+  module: polaris-wanda
+server:
+  port: 18091
+logging:
+  level: INFO

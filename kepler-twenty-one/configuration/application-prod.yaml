@@ -1,0 +1,7 @@
+marche:
+  env: PROD
+  module: kepler-twenty-one
+server:
+  port: 8085
+logging:
+  level: WARN

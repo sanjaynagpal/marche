@@ -1,0 +1,7 @@
+marche:
+  env: DEV
+  module: sirius-seventeen
+server:
+  port: 8082
+logging:
+  level: DEBUG

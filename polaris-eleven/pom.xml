@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.sn.marche</groupId>
+        <artifactId>marche-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>polaris-eleven</artifactId>
+    <packaging>pom</packaging>
+    <name>polaris-eleven</name>
+    <description>Marche polaris parent (Java 11). Aggregates havok and wanda submodules.</description>
+
+    <modules>
+        <module>havok</module>
+        <module>wanda</module>
+    </modules>
+
+    <properties>
+        <java.target.release>11</java.target.release>
+    </properties>
+
+</project>
