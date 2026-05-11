@@ -18,6 +18,28 @@
     <name>Marche Services Parent</name>
     <description>Intermediate parent POM for all deployable service modules. Provides assembly verification and serves as the boundary between service and library module types.</description>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- Internal library: consumed by JVM service modules only. -->
+            <dependency>
+                <groupId>io.sn.marche</groupId>
+                <artifactId>http-lib-java</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- Logging: pulled in by Ktor; irrelevant to libraries and tools. -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <build>
         <plugins>
             <plugin>
@@ -38,6 +60,24 @@
                                 <argument>${project.build.directory}</argument>
                                 <argument>${project.artifactId}</argument>
                                 <argument>${project.version}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>record-bytecode-versions</id>
+                        <phase>verify</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>--source</argument>
+                                <argument>11</argument>
+                                <argument>${maven.multiModuleProjectDirectory}/src/build-support/BytecodeReport.java</argument>
+                                <argument>${project.basedir}</argument>
+                                <argument>${project.build.directory}</argument>
+                                <argument>${project.artifactId}</argument>
+                                <argument>${project.version}</argument>
+                                <argument>${java.target.release}</argument>
                             </arguments>
                         </configuration>
                     </execution>

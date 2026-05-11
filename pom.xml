@@ -56,25 +56,15 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>io.sn.marche</groupId>
-                <artifactId>http-lib-java</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+            <!--
+                snakeyaml stays at root scope: it is used both by http-lib-java
+                (a library under marche-libraries-parent) and by JVM service modules.
+                Placing it here ensures both inheritance paths resolve the same version.
+            -->
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
