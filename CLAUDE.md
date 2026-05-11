@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Purpose
 
-Marche is a Maven multi-module archetype demonstrating Java language evolution and build patterns across JDK 8, 11, 17, and 21, plus Kotlin/Ktor variants. Each module is a minimal HTTP service exposing a `/health` endpoint that showcases language features appropriate to its target JDK version.
+Marche is a Maven multi-module archetype demonstrating Java language evolution and build patterns across JDK 8, 11, 17, and 21, plus Kotlin/Ktor and Go variants. Each module is a minimal HTTP service exposing a `/health` endpoint that showcases language features appropriate to its runtime.
 
 ## Build Commands
 
@@ -36,13 +36,14 @@ There are no tests and no linting/code-quality plugins configured.
 | `vega-twenty-one` | Java | 21 | 8083 | Virtual threads, pattern switch, record patterns |
 | `kepler-eleven` | Kotlin + Ktor 2.x | 11 | 8084 | Data classes, coroutines, scope functions |
 | `kepler-twenty-one` | Kotlin + Ktor 3.x | 21 | 8085 | Sealed interfaces, exhaustive `when`, virtual thread probe |
+| `gamma-go` | Go | 1.26+ | 8086 | Goroutines, channels, defer, graceful shutdown, `net/http` |
 | `polaris-eleven` | POM (parent) | — | — | Aggregator for `polaris-havok` and `polaris-wanda` |
 | `polaris-eleven/polaris-havok` | Java | 11 | 8090 | `ProcessHandle`, `Optional.isEmpty`, array generator |
 | `polaris-eleven/polaris-wanda` | Java | 11 | 8091 | `String.strip`, `Set.of`, `Files.readString` |
 
 ## Module Structure
 
-Every module follows this layout:
+JVM modules (Java and Kotlin) follow this layout:
 
 ```
 <module>/
@@ -50,6 +51,19 @@ Every module follows this layout:
 ├── binary/src/main/
 │   ├── java/          # Java modules
 │   └── kotlin/        # Kotlin modules (kepler-*)
+└── configuration/
+    ├── application-dev.yaml
+    ├── application-prod.yaml
+    └── application-test.yaml
+```
+
+Go service modules use a flat layout (no `binary/src/main/` subdirectory):
+
+```
+<module>/
+├── pom.xml
+├── go.mod
+├── main.go
 └── configuration/
     ├── application-dev.yaml
     ├── application-prod.yaml

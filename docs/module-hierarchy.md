@@ -8,6 +8,7 @@ Marche uses a three-level POM inheritance chain to separate three distinct kinds
 ```
 marche-parent  (root)
 ├── marche-services-parent
+│   ├── gamma-go
 │   ├── alpha-eight
 │   ├── orion-eleven
 │   ├── sirius-seventeen
@@ -39,12 +40,15 @@ marche-parent  (root)
 
 ```
 alpha-eight  →  marche-services-parent  →  marche-parent
+gamma-go     →  marche-services-parent  →  marche-parent
 ```
 
 Service modules inherit:
 - All version pins and dependency management from `marche-parent`
 - `distributionManagement` (Nexus repos) from `marche-parent`
 - `AssemblyVerifier` execution in the `verify` phase from `marche-services-parent`
+
+**Go service modules** (`gamma-go`) use `<packaging>pom</packaging>` so Maven's JVM lifecycle does not run. The `AssemblyVerifier` skips gracefully because there is no `target/lib/checksums.txt` — Go services produce native binaries, not JARs. All build steps are driven by `exec-maven-plugin` executions (same pattern as Go tool modules). The flat source layout places `go.mod` and `main.go` alongside `pom.xml` at the module root, with a `configuration/` directory for YAML config files.
 
 ### polaris sub-modules
 

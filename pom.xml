@@ -20,6 +20,7 @@
         <module>http-lib-java</module>
         <module>health-probe-go</module>
         <module>health-probe-java</module>
+        <module>gamma-go</module>
         <module>alpha-eight</module>
         <module>orion-eleven</module>
         <module>polaris-eleven</module>
