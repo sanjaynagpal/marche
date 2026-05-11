@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0
+                              https://maven.apache.org/xsd/settings-1.2.0.xsd">
+
+    <!--
+      Server credentials for the Nexus instance declared in marche-parent
+      distributionManagement (nexus-releases, nexus-snapshots).
+
+      Credentials are NOT baked into the image. Supply them at runtime:
+
+        podman run -e NEXUS_USER=ci -e NEXUS_PASSWORD=secret ...
+
+      Maven resolves ${env.VAR} natively — no shell preprocessing needed.
+    -->
+    <servers>
+        <server>
+            <id>nexus-releases</id>
+            <username>${env.NEXUS_USER}</username>
+            <password>${env.NEXUS_PASSWORD}</password>
+        </server>
+        <server>
+            <id>nexus-snapshots</id>
+            <username>${env.NEXUS_USER}</username>
+            <password>${env.NEXUS_PASSWORD}</password>
+        </server>
+    </servers>
+
+    <!--
+      Local repository path inside the container.
+      Mount a host directory here to cache downloaded artifacts across runs:
+
+        podman run -v /host/m2-cache:/root/.m2/repository:Z ...
+    -->
+    <localRepository>/root/.m2/repository</localRepository>
+
+    <!--
+      Uncomment and activate the nexus-mirror profile to route all central
+      artifact fetches through your Nexus proxy repository.
+      Supply NEXUS_URL at runtime:  -e NEXUS_URL=https://nexus.example.com
+
+    <mirrors>
+        <mirror>
+            <id>nexus-central</id>
+            <mirrorOf>central</mirrorOf>
+            <url>${env.NEXUS_URL}/repository/maven-central/</url>
+        </mirror>
+    </mirrors>
+
+    <profiles>
+        <profile>
+            <id>nexus-mirror</id>
+            <repositories>
+                <repository>
+                    <id>nexus-public</id>
+                    <url>${env.NEXUS_URL}/repository/maven-public/</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>nexus-mirror</activeProfile>
+    </activeProfiles>
+    -->
+
+</settings>
