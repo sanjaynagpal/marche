@@ -1,0 +1,10 @@
+=== Assembly Verification Report ===
+Generated : 2026-05-10T16:57:59
+Module    : orion-eleven:0.1.0-SNAPSHOT
+Archive   : orion-eleven-0.1.0-SNAPSHOT-bin.tar.gz
+
+Expected : 2 artifact(s)
+Present  : 2 artifact(s)
+Missing  : 0 artifact(s)
+
+RESULT: PASS — all runtime artifacts verified in distribution.

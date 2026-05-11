@@ -1,2 +1,2 @@
 63a76fe66b652360bd4c2c107e6f0258daa7d4bb492008ba8c26fcd230ff9146 *snakeyaml-2.3.jar
-503ec4f3a3e5bdfee5d03fa08a0dcf6eb77fc81b0849bd950adbb5e36cbe2ad0 *vega-twenty-one-0.1.0-SNAPSHOT.jar
+a83f5f123b8d429f6e68a4ac7bbf4d065005c59f7330aa0077d6b4927d094887 *vega-twenty-one-0.1.0-SNAPSHOT.jar

@@ -1,0 +1,6 @@
+=== Assembly Verification Report ===
+Generated : 2026-05-10T17:50:25
+Module    : marche-services-parent:0.1.0-SNAPSHOT
+Archive   : marche-services-parent-0.1.0-SNAPSHOT-bin.tar.gz
+
+SKIPPED: checksums.txt not found or empty — no artifacts to verify.

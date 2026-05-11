@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.sn.marche</groupId>
+        <artifactId>marche-tools-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath>../marche-tools-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>health-probe-go</artifactId>
+    <!--
+        POM packaging: no JVM lifecycle (compiler, jar) runs by default.
+        The exec-maven-plugin executions below drive the entire Go build.
+    -->
+    <packaging>pom</packaging>
+    <name>health-probe-go</name>
+    <description>
+        CLI tool that queries /health endpoints on running Marche services and reports
+        status. Written in Go; Maven orchestrates dependency download and cross-compilation
+        for Linux amd64 and Windows amd64 from any host JDK install.
+    </description>
+
+    <properties>
+        <!--
+            CGO_ENABLED=0 is required for pure cross-compilation. With CGO enabled,
+            the Go toolchain calls the host C compiler and cannot target a foreign OS.
+            All Marche tools must use only the Go standard library or pure-Go modules
+            so this constraint is always satisfiable.
+        -->
+        <go.arch>amd64</go.arch>
+        <go.cgo.enabled>0</go.cgo.enabled>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+
+                    <!--
+                        Download all modules declared in go.mod into the local module
+                        cache before compilation. Equivalent to `go mod download`.
+                        Runs early (initialize) so subsequent executions can assume
+                        the cache is warm.
+                    -->
+                    <execution>
+                        <id>go-mod-download</id>
+                        <phase>initialize</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>go</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>mod</argument>
+                                <argument>download</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- Linux amd64 binary -->
+                    <execution>
+                        <id>go-build-linux</id>
+                        <phase>package</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>go</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <environmentVariables>
+                                <GOOS>linux</GOOS>
+                                <GOARCH>${go.arch}</GOARCH>
+                                <CGO_ENABLED>${go.cgo.enabled}</CGO_ENABLED>
+                            </environmentVariables>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>-o</argument>
+                                <argument>${project.build.directory}/${project.artifactId}-linux-${go.arch}</argument>
+                                <argument>.</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- Windows amd64 binary -->
+                    <execution>
+                        <id>go-build-windows</id>
+                        <phase>package</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>go</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <environmentVariables>
+                                <GOOS>windows</GOOS>
+                                <GOARCH>${go.arch}</GOARCH>
+                                <CGO_ENABLED>${go.cgo.enabled}</CGO_ENABLED>
+                            </environmentVariables>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>-o</argument>
+                                <argument>${project.build.directory}/${project.artifactId}-windows-${go.arch}.exe</argument>
+                                <argument>.</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

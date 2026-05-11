@@ -1,0 +1,10 @@
+=== Assembly Verification Report ===
+Generated : 2026-05-10T16:58:07
+Module    : sirius-seventeen:0.1.0-SNAPSHOT
+Archive   : sirius-seventeen-0.1.0-SNAPSHOT-bin.tar.gz
+
+Expected : 2 artifact(s)
+Present  : 2 artifact(s)
+Missing  : 0 artifact(s)
+
+RESULT: PASS — all runtime artifacts verified in distribution.

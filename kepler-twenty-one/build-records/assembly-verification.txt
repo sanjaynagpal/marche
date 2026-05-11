@@ -1,0 +1,10 @@
+=== Assembly Verification Report ===
+Generated : 2026-05-10T16:58:37
+Module    : kepler-twenty-one:0.1.0-SNAPSHOT
+Archive   : kepler-twenty-one-0.1.0-SNAPSHOT-bin.tar.gz
+
+Expected : 38 artifact(s)
+Present  : 38 artifact(s)
+Missing  : 0 artifact(s)
+
+RESULT: PASS — all runtime artifacts verified in distribution.

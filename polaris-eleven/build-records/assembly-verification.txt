@@ -1,0 +1,6 @@
+=== Assembly Verification Report ===
+Generated : 2026-05-10T16:58:00
+Module    : polaris-eleven:0.1.0-SNAPSHOT
+Archive   : polaris-eleven-0.1.0-SNAPSHOT-bin.tar.gz
+
+SKIPPED: checksums.txt not found or empty — no artifacts to verify.

@@ -40,7 +40,15 @@ resolved and copied transitive dependencies:
 - The endorsed-standards override mechanism (`java.endorsed.dirs`) was effectively
   disabled, so JARs previously picked up via that path vanished silently.
 
-The Marche project already uses plugin versions above the minimums recommended for
+### Summary Table
+| Plugin | Minimum Version | Purpose |
+|---|---|---|
+| `maven-compiler-plugin` | 3.13.0 | Compiles Java 8 source safely with newer JDK |
+| `maven-dependency-plugin` | 3.7.1 | Copies all runtime jars to `lib/` |
+| `maven-assembly-plugin` | 3.7.1 | Packages everything into a tar.gz |
+| `maven-jar-plugin` | 3.4.2 | Produces the main jar with correct manifest |
+
+The project already uses plugin versions above the minimums recommended for
 8u492+ compatibility (`maven-dependency-plugin` 3.8.1, `maven-assembly-plugin` 3.8.0,
 `maven-compiler-plugin` 3.15.0). The architectural gap — no post-assembly verification
 — is what allowed failures to go undetected regardless of plugin versions.
@@ -126,3 +134,36 @@ Each module's `build-records/` directory accumulates:
 | `dependency-tree.txt` | `LibDiff` | Maven dependency tree snapshot |
 | `lib-changes.txt` | `LibDiff` | Diff vs. previous build (ADDED / REMOVED / CHANGED) |
 | `assembly-verification.txt` | `AssemblyVerifier` | PASS / FAIL record for the tar.gz archive |
+
+---
+
+## What to Expect in a PR — `checksums.txt`
+
+### Why it is committed to source control
+
+`checksums.txt` is **intentionally tracked in git**. It functions as a dependency lock
+file for each module's runtime JAR set. Every successful build overwrites it with the
+current SHA-256 fingerprints, so any change to the resolved dependency graph — a version
+bump, a new transitive dependency, a removed JAR — surfaces as a visible diff in the PR.
+
+### What reviewers should look for
+
+When `build-records/checksums.txt` appears in a PR diff, treat it as a bill-of-materials
+change and review it deliberately:
+
+| Change in diff | What it means | Action |
+|---|---|---|
+| A JAR added | New direct or transitive dependency pulled in | Confirm it is intentional and the licence is acceptable |
+| A JAR removed | Dependency dropped or exclusion applied | Confirm nothing at runtime depended on it |
+| Version number changed in a filename | Dependency version bumped | Cross-check against the `pom.xml` change that caused it |
+| File unchanged | Dependency graph is identical to the previous build | No action needed |
+
+A `checksums.txt` diff with no corresponding `pom.xml` change is a signal worth
+investigating — it may indicate a transitive dependency was updated upstream without an
+explicit version pin in the project.
+
+### What is not committed
+
+`lib-changes.txt` is ephemeral build output (a human-readable diff produced fresh each
+build) and is excluded via `.gitignore`. Only `checksums.txt`, `dependency-tree.txt`,
+and `assembly-verification.txt` are committed.

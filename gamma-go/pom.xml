@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.sn.marche</groupId>
+        <artifactId>marche-services-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath>../marche-services-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>gamma-go</artifactId>
+    <!--
+        POM packaging: no JVM lifecycle (compiler, jar, surefire) runs by default.
+        The exec-maven-plugin executions below drive the entire Go build.
+        The inherited AssemblyVerifier skips gracefully because there is no
+        target/lib/checksums.txt — Go services produce native binaries, not JARs.
+    -->
+    <packaging>pom</packaging>
+    <name>gamma-go</name>
+    <description>
+        Minimal HTTP service exposing /health, written in Go. Demonstrates goroutines,
+        channels, defer, graceful shutdown via os/signal, and the net/http stdlib server.
+        Maven orchestrates cross-compilation to Linux amd64 and Windows amd64 binaries.
+    </description>
+
+    <properties>
+        <go.arch>amd64</go.arch>
+        <go.cgo.enabled>0</go.cgo.enabled>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+
+                    <execution>
+                        <id>go-mod-download</id>
+                        <phase>initialize</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>go</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>mod</argument>
+                                <argument>download</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- Linux amd64 binary — primary deployment target -->
+                    <execution>
+                        <id>go-build-linux</id>
+                        <phase>package</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>go</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <environmentVariables>
+                                <GOOS>linux</GOOS>
+                                <GOARCH>${go.arch}</GOARCH>
+                                <CGO_ENABLED>${go.cgo.enabled}</CGO_ENABLED>
+                            </environmentVariables>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>-o</argument>
+                                <argument>${project.build.directory}/${project.artifactId}-linux-${go.arch}</argument>
+                                <argument>.</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- Windows amd64 binary — for local developer testing -->
+                    <execution>
+                        <id>go-build-windows</id>
+                        <phase>package</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>go</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <environmentVariables>
+                                <GOOS>windows</GOOS>
+                                <GOARCH>${go.arch}</GOARCH>
+                                <CGO_ENABLED>${go.cgo.enabled}</CGO_ENABLED>
+                            </environmentVariables>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>-o</argument>
+                                <argument>${project.build.directory}/${project.artifactId}-windows-${go.arch}.exe</argument>
+                                <argument>.</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
