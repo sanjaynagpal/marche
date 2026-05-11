@@ -75,14 +75,21 @@ The build does not use `maven-shade-plugin`. Instead, a chain of four plugins ex
 ```
 package phase execution order
 ──────────────────────────────────────────────────────────────────
-1. jar:jar               (default lifecycle binding — thin module JAR)
-2. dependency:copy-deps  copy runtime dependency JARs → target/lib/
-3. dependency:dep-tree   write dependency tree      → target/lib/dependency-tree.txt
-4. antrun:stage-jar      copy module JAR            → target/lib/
-5. antrun:checksums      SHA-256 all *.jar files    → target/lib/checksums.txt
-6. exec:generate-diff    diff vs. build-records/    → target/lib/lib-changes.txt
-                           update build-records/
-7. assembly:single       package binary tar + cfg tar
+1. jar:jar                       (default lifecycle binding — thin module JAR)
+2. dependency:copy-deps           copy runtime dependency JARs → target/lib/
+3. dependency:dep-tree            write dependency tree         → target/lib/dependency-tree.txt
+4. antrun:stage-jar               copy module JAR               → target/lib/
+5. antrun:checksums               SHA-256 all *.jar files       → target/lib/checksums.txt
+6. exec:generate-diff             diff vs. build-records/       → target/lib/lib-changes.txt
+                                   update build-records/checksums.txt
+                                   update build-records/dependency-tree.txt
+7. assembly:single                package binary tar + cfg tar
+──────────────────────────────────────────────────────────────────
+
+verify phase execution order  (inherited from marche-services-parent)
+──────────────────────────────────────────────────────────────────
+8. exec:verify-assembly           confirm all JARs present in binary tar → build-records/assembly-verification.txt
+9. exec:record-bytecode-versions  inspect class file major versions       → build-records/bytecode-versions.txt
 ──────────────────────────────────────────────────────────────────
 ```
 
@@ -189,7 +196,7 @@ Module    : alpha-eight:0.1.0-SNAPSHOT
 >
 > Groovy's ASM library (used internally to parse class files) does not yet support JDK 25 bytecode (class file major version 69). Invoking GMavenPlus on a JDK 25 build raises `Unsupported class file major version 69`. A plain `java --source 11` invocation avoids this entirely — the `java` launcher compiles and runs the source file directly, with no third-party scripting engine in the path. Shell scripts were ruled out because the project must build correctly on both Unix and Windows without requiring separate script variants.
 
-### Plugin 5 — `maven-assembly-plugin`: package the two tarballs
+### Plugin 5 — `maven-assembly-plugin`: package the two tarballs (package phase)
 
 A single execution (`id: dist`, phase `package`, goal `single`) reads two shared assembly descriptors located at the root of the multi-module project under `src/assembly/`:
 
@@ -205,7 +212,27 @@ A single execution (`id: dist`, phase `package`, goal `single`) reads two shared
 - No include filter — any YAML file added to that directory is packaged automatically.
 - Sets `<includeBaseDirectory>false</includeBaseDirectory>` so `cfg/` is the root.
 
-The descriptors are shared across all eight modules via `${maven.multiModuleProjectDirectory}`, the Maven property that resolves to the root project directory regardless of which submodule is currently being built. This includes the nested `polaris-havok` and `polaris-wanda` modules, where `${project.basedir}` is two levels deep.
+The descriptors are shared across all service modules via `${maven.multiModuleProjectDirectory}`, the Maven property that resolves to the root project directory regardless of which submodule is currently being built. This includes the nested `polaris-havok` and `polaris-wanda` modules, where `${project.basedir}` is two levels deep.
+
+### Plugin 6 — `exec-maven-plugin`: assembly verification (verify phase)
+
+Declared once in `marche-services-parent/pom.xml` and inherited by every JVM service module. Runs `java --source 11 src/build-support/AssemblyVerifier.java` as a forked process after `package` completes and the binary tar exists.
+
+`AssemblyVerifier.java` parses `target/lib/checksums.txt` to build the expected set of JAR filenames, then walks the binary tar entry-by-entry without fully extracting it. For every JAR that appears in `checksums.txt` but is absent from the archive, it records a `MISSING` entry. If any are missing the process exits non-zero and the build fails. The result is written to `build-records/assembly-verification.txt`.
+
+**Why this matters**: `maven-assembly-plugin` uses declarative XML descriptors — a misconfigured `<includes>` filter or a missing `<dependencySet>` can silently drop a JAR from the archive without failing the build. `AssemblyVerifier` closes that gap by cross-checking the shipped archive against the checksum manifest produced moments earlier.
+
+**Go modules** skip gracefully: `checksums.txt` is absent when there is no `target/lib/`, so the verifier logs `SKIPPED` and exits zero.
+
+### Plugin 7 — `exec-maven-plugin`: bytecode version report (verify phase)
+
+Also declared in `marche-services-parent/pom.xml`, runs immediately after `verify-assembly`. Runs `java --source 11 src/build-support/BytecodeReport.java`, passing five arguments: basedir, target directory, artifact ID, version, and `${java.target.release}`.
+
+`BytecodeReport.java` opens each JAR in `target/lib/` as a ZIP file and reads the first `.class` entry it finds. Every Java class file begins with a 4-byte magic (`0xCAFEBABE`), then a 2-byte minor version, then a 2-byte major version. The tool reads bytes 6–7 of that header. The major version encodes the minimum JVM required to load the file: `major = 44 + N` for Java N (Java 8 → 52, Java 11 → 55, Java 17 → 61, Java 21 → 65). If any JAR's major version exceeds the module's declared target the process exits non-zero. The full table is written to `build-records/bytecode-versions.txt`.
+
+**Why this matters**: `--release` ensures the module's own compiled classes respect the declared target. `enforceBytecodeVersion` (validate phase) enforces the same constraint on dependency JARs at compile time. `BytecodeReport` provides a third, independent check at the end of the build: it re-reads the actual bytes baked into the JARs that were just packaged into the distribution, confirming the runtime payload that will be deployed. This closes the loop between what the compiler was told, what the enforcer scanned, and what was actually shipped.
+
+**Go modules** skip gracefully: `target/lib/` is absent, so the tool logs `SKIPPED` and exits zero.
 
 ---
 
@@ -270,6 +297,55 @@ Together, `--release` and `enforceBytecodeVersion` provide end-to-end assurance:
 
 ---
 
+## Dependency Management
+
+Maven's `<dependencyManagement>` block in a parent POM is a **version catalogue, not a dependency list**. An entry there does not add the dependency to any module. It only records the version (and optionally scope and exclusions) that Maven should use when a child module opts in by declaring the dependency in its own `<dependencies>` block — without repeating the version.
+
+```xml
+<!-- Parent POM: pins the version once -->
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.3</version>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+
+<!-- Child module: opts in, version resolved from parent -->
+<dependencies>
+    <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+    </dependency>
+</dependencies>
+```
+
+A module that never declares a dependency gets nothing from `<dependencyManagement>`, regardless of how many entries the parent defines. Removing a dependency from a module's own `<dependencies>` is sufficient — the parent entry becomes a no-op.
+
+### Two-level split
+
+Marche distributes `<dependencyManagement>` across two parent POMs so each entry is visible only on the inheritance paths where it is relevant.
+
+**Root `pom.xml`** — cross-cutting dependencies needed on more than one inheritance path:
+
+| Dependency | Reason |
+|---|---|
+| `snakeyaml` | Used by `http-lib-java` (a library under `marche-libraries-parent`) and directly by JVM service modules. Declaring it here ensures both paths resolve the same version. |
+
+**`marche-services-parent`** — service-only dependencies that have no place in a library or a CLI tool:
+
+| Dependency | Reason |
+|---|---|
+| `http-lib-java` | The shared HTTP utility library consumed by JVM service modules. Libraries and tools do not use it. |
+| `slf4j-api` | Logging API pulled in by Ktor. Only service modules run a logging framework. |
+| `logback-classic` | Ktor's default logging backend. Same reasoning as `slf4j-api`. |
+
+A module under `marche-libraries-parent` or `marche-tools-parent` that mistakenly declares `slf4j-api` without a version will get a build error rather than silently inheriting a version from a parent it does not belong to. The entry is simply not in scope for those inheritance paths.
+
+---
+
 ## Plugin Version Registry
 
 All plugin versions are pinned centrally in the root `pom.xml` `<pluginManagement>` block.
@@ -292,16 +368,30 @@ All plugin versions are pinned centrally in the root `pom.xml` `<pluginManagemen
 ## Module Hierarchy
 
 ```
-marche-parent (pom)
-├── alpha-eight      (jar)  → bin + cfg tars
-├── orion-eleven     (jar)  → bin + cfg tars
-├── sirius-seventeen (jar)  → bin + cfg tars
-├── vega-twenty-one  (jar)  → bin + cfg tars
-├── kepler-eleven    (jar)  → bin + cfg tars
-├── kepler-twenty-one(jar)  → bin + cfg tars
-└── polaris-eleven   (pom — aggregator, no tars)
-    ├── polaris-havok (jar) → bin + cfg tars
-    └── polaris-wanda (jar) → bin + cfg tars
+marche-parent (pom — root aggregator, dependency management, plugin management)
+│
+├── marche-services-parent  (pom — verify phase execs, service-scoped dependencyManagement)
+├── marche-libraries-parent (pom — plain JAR lifecycle, no assembly)
+├── marche-tools-parent     (pom — exec-maven-plugin orchestration, no JVM lifecycle)
+│
+├── [libraries]  — inherit from marche-libraries-parent
+│   └── http-lib-java        (jar) → published to Nexus; consumed by JVM service modules
+│
+├── [tools]  — inherit from marche-tools-parent
+│   ├── health-probe-java    (jar) → self-contained executable JAR (Java 17)
+│   └── health-probe-go      (pom) → native binaries: Linux amd64 + Windows amd64
+│
+└── [services]  — inherit from marche-services-parent
+    ├── alpha-eight          (jar) → bin + cfg tars
+    ├── orion-eleven         (jar) → bin + cfg tars
+    ├── sirius-seventeen     (jar) → bin + cfg tars
+    ├── vega-twenty-one      (jar) → bin + cfg tars
+    ├── kepler-eleven        (jar) → bin + cfg tars
+    ├── kepler-twenty-one    (jar) → bin + cfg tars
+    ├── gamma-go             (pom) → native binaries: Linux amd64 + Windows amd64
+    └── polaris-eleven       (pom — sub-aggregator, no tars)
+        ├── polaris-havok    (jar) → bin + cfg tars
+        └── polaris-wanda    (jar) → bin + cfg tars
 ```
 
-`polaris-eleven` inherits from `marche-parent` and passes that inheritance to its children. The `${maven.multiModuleProjectDirectory}` property ensures that the shared assembly descriptors and `LibDiff.java` are always resolved relative to the root, even for `polaris-havok` and `polaris-wanda`.
+All modules are declared directly in the root `pom.xml` `<modules>` list — the intermediate parent POMs are not aggregators, they are purely inheritance parents. The `${maven.multiModuleProjectDirectory}` property resolves to the root regardless of build depth, so shared resources such as assembly descriptors and build-support scripts are always located correctly, including for the nested `polaris-havok` and `polaris-wanda` modules.
