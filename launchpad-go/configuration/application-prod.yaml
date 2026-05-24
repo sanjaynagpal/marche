@@ -1,0 +1,5 @@
+launchpad:
+  env: PROD
+  module: launchpad-go
+logging:
+  level: INFO
